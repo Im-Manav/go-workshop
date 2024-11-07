@@ -24,5 +24,5 @@ func benchmarkFilmSlice(title string, b *testing.B) {
 
 func BenchmarkMapExistingFilm(b *testing.B)   { benchmarkFilmMap("Star Wars: Episode I – The Phantom Menace", b) }
 func BenchmarkMapMissingFilm(b *testing.B)    { benchmarkFilmMap("Spider-Man 3", b) }
-func BenchmarkSliceExistingFilm(b *testing.B) { benchmarkFilmMap("Star Wars: Episode I – The Phantom Menace", b) }
-func BenchmarkSliceMissingFilm(b *testing.B)  { benchmarkFilmMap("Spider-Man 3", b) }
+func BenchmarkSliceExistingFilm(b *testing.B) { benchmarkFilmSlice("Star Wars: Episode I – The Phantom Menace", b) }
+func BenchmarkSliceMissingFilm(b *testing.B)  { benchmarkFilmSlice("Spider-Man 3", b) }

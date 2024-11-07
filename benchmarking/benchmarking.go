@@ -8,7 +8,7 @@ import (
 )
 
 //go:embed movies-1990s.json
-var jsonB []byte
+var jsonFile []byte
 
 type Film struct {
 	Title   string
@@ -20,7 +20,7 @@ var ErrFilmNotFound = errors.New("film not found")
 func NewFilmSlice() ([]Film, error) {
 	var films []Film
 
-	err := json.Unmarshal(jsonB, &films)
+	err := json.Unmarshal(jsonFile, &films)
 	if err != nil {
 		return nil, err
 	}
@@ -47,12 +47,14 @@ func SearchFilmMap(films map[string]string, title string) (Film, error) {
 		return Film{}, ErrFilmNotFound
 	}
 
-   title = strings.ReplaceAll(title, "-", "")
-  title = strings.ReplaceAll(title, ":", "")
-  /* 	r := strings.NewReplacer("-", "", ":", "")
+  title = strings.ReplaceAll(title, "-", "")
+	title = strings.ReplaceAll(title, ":", "")
+
+ 	/* r := strings.NewReplacer("-", "", ":", "")
 	title = r.Replace(title)
  */
-  title = strings.ToLower(title)
+	title = strings.ToLower(title)
+
 	f := Film{
 		Title:   title,
 		Extract: v,
@@ -63,11 +65,13 @@ func SearchFilmMap(films map[string]string, title string) (Film, error) {
 func SearchFilmSlice(films []Film, title string) (Film, error) {
 	for _, film := range films {
 		if film.Title == title {
-		 film.Title = strings.ReplaceAll(film.Title, "-", "")
-      film.Title = strings.ReplaceAll(film.Title, ":", "")
-/* 			r := strings.NewReplacer("-", "", ":", "")
-			film.Title = r.Replace(film.Title)
-   */    film.Title = strings.ToLower(film.Title)
+			  film.Title = strings.ReplaceAll(film.Title, "-", "")
+			   film.Title = strings.ReplaceAll(film.Title, ":", "")
+
+		  /* r := strings.NewReplacer("-", "", ":", "")
+			film.Title = r.Replace(film.Title) */
+
+			film.Title = strings.ToLower(film.Title)
 			return film, nil
 		}
 	}
