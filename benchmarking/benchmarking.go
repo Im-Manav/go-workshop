@@ -47,12 +47,12 @@ func SearchFilmMap(films map[string]string, title string) (Film, error) {
 		return Film{}, ErrFilmNotFound
 	}
 
-  title = strings.ReplaceAll(title, "-", "")
+	/* title = strings.ReplaceAll(title, "-", "")
 	title = strings.ReplaceAll(title, ":", "")
-
- 	/* r := strings.NewReplacer("-", "", ":", "")
+	*/
+	r := strings.NewReplacer("-", "", ":", "")
 	title = r.Replace(title)
- */
+
 	title = strings.ToLower(title)
 
 	f := Film{
@@ -65,11 +65,11 @@ func SearchFilmMap(films map[string]string, title string) (Film, error) {
 func SearchFilmSlice(films []Film, title string) (Film, error) {
 	for _, film := range films {
 		if film.Title == title {
-			  film.Title = strings.ReplaceAll(film.Title, "-", "")
-			   film.Title = strings.ReplaceAll(film.Title, ":", "")
-
-		  /* r := strings.NewReplacer("-", "", ":", "")
-			film.Title = r.Replace(film.Title) */
+			/* 			film.Title = strings.ReplaceAll(film.Title, "-", "")
+			   			film.Title = strings.ReplaceAll(film.Title, ":", "")
+			*/
+			r := strings.NewReplacer("-", "", ":", "")
+			film.Title = r.Replace(film.Title)
 
 			film.Title = strings.ToLower(film.Title)
 			return film, nil
