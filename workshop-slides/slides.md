@@ -1,6 +1,6 @@
 ---
 # You can also start simply with 'default'
-theme: mint
+theme: default
 title: Go Workshop - 102
 ---
 
