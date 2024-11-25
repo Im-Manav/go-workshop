@@ -114,16 +114,15 @@ To run benchmark tests we will have to run the following command
 go test -bench=.
 ```
 ---
-```sh{all|1|2-5|6-11}
-go test -bench=. -benchmem
+```sh{all|1-4|5-11}
 goos: linux
 goarch: amd64
 pkg: github.com/a-h/flake-templates/go/benchmarking
 cpu: AMD Ryzen 5 PRO 4650U with Radeon Graphics
-BenchmarkMapExistingFilm-12               240838              4809 ns/op            6840 B/op          7 allocs/op
-BenchmarkMapMissingFilm-12              98418349                12.09 ns/op            0 B/op          0 allocs/op
-BenchmarkSliceExistingFilm-12             138393              8689 ns/op            6843 B/op          7 allocs/op
-BenchmarkSliceMissingFilm-12              512241              2347 ns/op               3 B/op          0 allocs/op
+BenchmarkMapExistingFilm-12               257832              4866 ns/op
+BenchmarkMapMissingFilm-12              90033596                12.42 ns/op
+BenchmarkSliceExistingFilm-12             131839              9028 ns/op
+BenchmarkSliceMissingFilm-12              473396              2349 ns/op
 PASS
-ok      github.com/a-h/flake-templates/go/benchmarking  7.560s
+ok      github.com/a-h/flake-templates/go/benchmarking  6.616s
 ```
