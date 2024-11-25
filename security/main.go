@@ -8,6 +8,7 @@ import (
 	"os"
 
 	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/text/language"
 )
 
 type Customer struct {
@@ -17,7 +18,26 @@ type Customer struct {
 	Company string `json:"company"`
 }
 
+type T struct {
+	A string
+	B struct {
+		RenamedC int   `yaml:"c"`
+		D        []int `yaml:",flow"`
+	}
+}
+
 func run() error {
+	for _, arg := range os.Args[1:] {
+		tag, err := language.Parse(arg)
+		if err != nil {
+			fmt.Printf("%s: error: %v\n", arg, err)
+		} else if tag == language.Und {
+			fmt.Printf("%s: undefined\n", arg)
+		} else {
+			fmt.Printf("%s: tag %s\n", arg, tag)
+		}
+	}
+
 	db, err := sql.Open("sqlite3", "file::memory:?cache=shared")
 	if err != nil {
 		return err
@@ -66,13 +86,13 @@ func postCustomerHandler(s Store) http.Handler {
 		err := json.NewDecoder(r.Body).Decode(&c)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-      return
+			return
 		}
 
 		err = s.PutCustomer(c)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-      return
+			return
 		}
 	})
 }
@@ -83,13 +103,13 @@ func getCustomerHandler(s Store) http.Handler {
 		customer, err := s.GetCustomer(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-      return
+			return
 		}
 
 		err = json.NewEncoder(w).Encode(&customer)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-      return
+			return
 		}
 	})
 }
