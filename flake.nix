@@ -84,6 +84,9 @@
         pkgs.gh
         pkgs.git
         pkgs.go
+        pkgs.gosec
+        pkgs.govulncheck
+        pkgs.grype
         xc.packages.${system}.xc
         gomod2nix.legacyPackages.${system}.gomod2nix
       ];
