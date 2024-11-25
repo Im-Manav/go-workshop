@@ -102,35 +102,3 @@ func doWork() error {
 
 	return nil
 }
-
-// Red Method:
-// Rate (the number of requests per second)
-// Errors (the number of those requests that are failing)
-// Duration (the amount of time those requests take)
-
-// Good for microservices, and records things that directly affect users
-// Good proxy to how happy your customers will be
-// Generally, you want to focus on business metrics rather than technical ones (cpu used etc)
-// Of course these can be useful in certain circumstances but shouldn't be your goal
-
-// TODO: Come up with a challenge
-//	 can you add some new metrics?
-// Come up with an outcome
-// Problems with observability solutions
-// Google SRE: Red method
-// Focus on busineess not technical
-
-//TODO: Hey web tool to ping something a bunch of times
-
-// Getting started!
-// 	docker compose up
-//  go run main.go
-
-//	localhost:8080/hello - This is your basic 200 route
-//  localhost:8080/metrics - Where Promethus is displayed
-//  localhost:8080/err - 404
-//  localhost:8080/internal-err - 500
-//  http://localhost:9090/query - prom
-//  http://localhost:3001/ - graphana
-
-// dashboards, create dashboard, add visualisation, promethus, set up a metric from dropdown (uptimeTotal), run query
