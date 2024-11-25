@@ -1,11 +1,16 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/text/language"
@@ -26,7 +31,7 @@ type T struct {
 	}
 }
 
-func run() error {
+func run(ctx context.Context, log *slog.Logger) error {
 	for _, arg := range os.Args[1:] {
 		tag, err := language.Parse(arg)
 		if err != nil {
@@ -38,6 +43,7 @@ func run() error {
 		}
 	}
 
+	log.Info("Creating database")
 	db, err := sql.Open("sqlite3", "file::memory:?cache=shared")
 	if err != nil {
 		return err
@@ -47,6 +53,7 @@ func run() error {
 		return err
 	}
 
+	log.Info("Populating database with test data")
 	_, err = db.Exec(`INSERT INTO customers (name, surname, company)
 VALUES
 ('Gopher', 'McGopher', 'Gopher LTD'),
@@ -58,14 +65,23 @@ VALUES
 	mux := http.NewServeMux()
 	store := NewStore(db)
 
-	mux.Handle("GET /customer/{id}", getCustomerHandler(store))
-	mux.Handle("POST /customer", postCustomerHandler(store))
+	mux.Handle("GET /customer/{id}", getCustomerHandler(log, store))
+	mux.Handle("POST /customer", postCustomerHandler(log, store))
 
 	s := http.Server{
 		Addr:    ":8005",
 		Handler: mux,
 	}
-	fmt.Println("listening on port :8005")
+
+	go func() {
+		<-ctx.Done()
+		log.Info("shutting down server")
+		if err := s.Shutdown(ctx); err != nil {
+			log.Error("error shutting down server", slog.Any("error", err))
+		}
+	}()
+
+	log.Info("listening", slog.Any("addr", s.Addr))
 	err = s.ListenAndServe()
 	if err != nil {
 		return err
@@ -74,14 +90,29 @@ VALUES
 }
 
 func main() {
-	if err := run(); err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
+	log := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{}))
+
+	ctx, cancel := context.WithCancel(context.Background())
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-signals
+		log.Info("received signal, shutting down")
+		cancel()
+	}()
+
+	var exitCode int
+	err := run(ctx, log)
+	if err != nil && !errors.Is(err, context.Canceled) {
+		log.Error("fatal error", slog.Any("error", err))
+		exitCode = 1
 	}
+	os.Exit(exitCode)
 }
 
-func postCustomerHandler(s Store) http.Handler {
+func postCustomerHandler(log *slog.Logger, s Store) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Info("received request", slog.Any("method", r.Method), slog.Any("url", r.URL))
 		var c Customer
 		err := json.NewDecoder(r.Body).Decode(&c)
 		if err != nil {
@@ -94,12 +125,15 @@ func postCustomerHandler(s Store) http.Handler {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		w.WriteHeader(http.StatusCreated)
 	})
 }
 
-func getCustomerHandler(s Store) http.Handler {
+func getCustomerHandler(log *slog.Logger, s Store) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
+		log.Info("received request", slog.Any("method", r.Method), slog.Any("url", r.URL), slog.Any("id", id))
 		customer, err := s.GetCustomer(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
