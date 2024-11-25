@@ -21,7 +21,68 @@ Graphana is an observability platform and allows for visualisations
 # Promethus in Go
 
 Promethus has an offical go package
+```go
+var(
+    uptimeTotal = prometheus.NewCounter(prometheus.CounterOpts{
+            Name: "uptime_total",
+            Help: "uptime of app in seconds",
+        })
+)
+func main(){
+    r := prometheus.NewRegistry()
+    r.MustRegister(uptimeTotal)
 
+    go func() {
+        for {
+            uptimeTotal.Inc()
+            time.Sleep(time.Second)
+        }
+    }()
+}
+```
+
+# Promethus in Go
+```go
+var (
+    httpRequestsTotal = prometheus.NewCounter(prometheus.CounterOpts{
+        Name: "http_requests_total",
+        Help: "Count of all HTTP requests",
+    })
+)
+func main() {
+    r := prometheus.NewRegistry()
+    r.MustRegister(httpRequestsTotal)
+    r.MustRegister(httpErrorsTotal)
+
+
+    foundHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        httpRequestsTotal.Inc()
+        err := doWork()
+        if err != nil {
+            w.WriteHeader(http.StatusInternalServerError)
+            w.Write([]byte(err.Error()))
+            httpErrorsTotal.Inc()
+            return
+        }
+        w.WriteHeader(http.StatusOK)
+        w.Write([]byte("Hello from example application."))
+    })
+
+    mux := http.NewServeMux()
+    mux.Handle("/hello", foundHandler)
+
+     // Host it
+    srv := &http.Server{
+        Addr: ":8080",
+        Handler: h2c.NewHandler(
+            mux,
+            &http2.Server{},
+        )}
+
+    srv.ListenAndServe()
+}
+
+```
 
 
 
