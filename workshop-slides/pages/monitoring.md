@@ -41,7 +41,7 @@ func main(){
 }
 ```
 
-# Promethus in Go
+# Promethus with API
 ```go
 var (
     httpRequestsTotal = prometheus.NewCounter(prometheus.CounterOpts{
@@ -81,22 +81,19 @@ func main() {
 
     srv.ListenAndServe()
 }
-
 ```
 
-
-
-// Should this be included somwhere else? Efectivly the conclusion
-
-Red Method:
+---
+# Red Method
 - Rate (the number of requests per second)
 - Errors (the number of those requests that are failing)
 - Duration (the amount of time those requests take)
+---
 
-Good for microservices, and records things that directly affect users
-Good proxy to how happy your customers will be
-Generally, you want to focus on business metrics rather than technical ones (cpu used etc)
-Of course these can be useful in certain circumstances but shouldn't be your goal
+# Why Red?
+- Good for microservices, and records things that directly affect users
+- Good proxy to how happy your customers will be
+- Generally, you want to focus on business metrics rather than technical ones (cpu used etc)
 
 
 
