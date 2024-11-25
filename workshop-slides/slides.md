@@ -19,7 +19,7 @@ transition: fade-out
 - Logging with slog
 - Benchmarking with built-in benchmarking tools by using memory and cpu profiling
 - Testing strategies
-- Vulnerability assessment using govulncheck, golang-ci, Github CodeQL
+- Vulnerability assessment using govulncheck, gosec
 - Docker, nix and containerisation
 
 ---

@@ -114,7 +114,7 @@ To run benchmark tests we will have to run the following command
 go test -bench=.
 ```
 ---
-```sh
+```sh{all|1|2-5|6-11}
 go test -bench=. -benchmem
 goos: linux
 goarch: amd64
