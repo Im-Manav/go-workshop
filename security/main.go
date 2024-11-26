@@ -12,16 +12,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	posthandler "github.com/a-h/go-workshop-102/security/handlers/customer/post"
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/text/language"
 )
-
-type Customer struct {
-	Id      int    `json:"customerId"`
-	Name    string `json:"name"`
-	Surname string `json:"surname"`
-	Company string `json:"company"`
-}
 
 type T struct {
 	A string
@@ -63,10 +57,10 @@ VALUES
 	}
 
 	mux := http.NewServeMux()
-	store := NewStore(db)
+	store := newDB(db)
 
 	mux.Handle("GET /customer/{id}", getCustomerHandler(log, store))
-	mux.Handle("POST /customer", postCustomerHandler(log, store))
+	mux.Handle("POST /customer", posthandler.New(log, store))
 
 	s := http.Server{
 		Addr:    ":8005",
@@ -110,27 +104,7 @@ func main() {
 	os.Exit(exitCode)
 }
 
-func postCustomerHandler(log *slog.Logger, s Store) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Info("received request", slog.Any("method", r.Method), slog.Any("url", r.URL))
-		var c Customer
-		err := json.NewDecoder(r.Body).Decode(&c)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		err = s.PutCustomer(c)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.WriteHeader(http.StatusCreated)
-	})
-}
-
-func getCustomerHandler(log *slog.Logger, s Store) http.Handler {
+func getCustomerHandler(log *slog.Logger, s clientDB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
 		log.Info("received request", slog.Any("method", r.Method), slog.Any("url", r.URL), slog.Any("id", id))
