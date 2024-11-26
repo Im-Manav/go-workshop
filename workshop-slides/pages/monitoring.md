@@ -9,12 +9,14 @@ layout: center
 ---
 
 ## What's Monitoring? 
-Involves collecting and reporting on specific metrics to identify issues in a system. Monitoring can provide alerts and data on a system's performance, but it doesn't necessarily explain what's causing problems.
+Collecting and reporting on specific metrics to identify issues in a system. Monitoring can provide alerts and data on a system's performance, but it doesn't necessarily explain what's causing problems.
 
 ---
 layout: center
 ---
-Why should we care?
+
+## Why should we care?
+
 ---
 
 - Application's performance
@@ -22,9 +24,10 @@ Why should we care?
 - Troubleshooting
 - Real-time data
 - Security
+
 ---
 
-## How are we going to do that?
+### How are we going to do that?
 
 Prometheus is an open-source monitoring and alerting tool designed for reliability and scalability. It collects and stores metrics as time-series data, provides a query language (PromQL).
 
@@ -32,12 +35,10 @@ Grafana is an open-source visualization and analytics tool that transforms monit
 
 ---
 
-
----
-# Prometheus in Go
+## Prometheus in Go
 
 Prometheus has an offical go package
-```go
+```go{all|1-6|7-17|8-9|11-16}
 var(
     uptimeTotal = prometheus.NewCounter(prometheus.CounterOpts{
             Name: "uptime_total",
@@ -56,10 +57,11 @@ func main(){
     }()
 }
 ```
+
 ---
 
-# Prometheus with API
-```go
+## Prometheus with API
+```go{all|1-6|7-38|8-10|13-37}
 var (
     httpRequestsTotal = prometheus.NewCounter(prometheus.CounterOpts{
         Name: "http_requests_total",
@@ -84,33 +86,35 @@ func main() {
         w.WriteHeader(http.StatusOK)
         w.Write([]byte("Hello from example application."))
     })
-
-    mux := http.NewServeMux()
-    mux.Handle("/hello", foundHandler)
-
-     // Host it
-    srv := &http.Server{
-        Addr: ":8080",
-        Handler: h2c.NewHandler(
-            mux,
-            &http2.Server{},
-        )}
-
-    srv.ListenAndServe()
 }
 ```
+---
+layout: center
+---
+
+## Let's get monitoring!
 
 ---
 
-# Red Method
-- Rate (the number of requests per second)
-- Errors (the number of those requests that are failing)
-- Duration (the amount of time those requests take)
+In the `monitoring` folder you find a `README.md` that will guide you through setting up the application.
+
+```bash
+monitoring
+├── README.md
+├── compose.yaml
+├── grafana
+│   └── datasource.yml
+├── main.go
+└── prometheus
+    └── prometheus.yml
+```
+We will spend around 25 minutes.
 
 ---
 
-# Why Red?
-- Good for microservices, and records things that directly affect users
-- Good proxy to how happy your customers will be
-- Generally, you want to focus on business metrics rather than technical ones (cpu used etc)
+## Tips
 
+- Middlware to capture metrics (especially for APIs)
+- RED method - dashboards, metrics
+- OpenTelemetry
+- Data driven iteration!

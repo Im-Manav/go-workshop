@@ -87,6 +87,7 @@ func main() {
 			&http2.Server{},
 		)}
 
+  log.Printf("server starting on port %s\n", srv.Addr)
 	log.Fatal(srv.ListenAndServe())
 }
 

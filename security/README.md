@@ -30,6 +30,21 @@ For more info on installation https://github.com/anchore/grype?tab=readme-ov-fil
 curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
 ```
 
+### run-govuln
+
+Run govulncheck tool.
+
+```bash
+govulncheck ./...
+```
+
+### run-gosec
+
+Run the gosec tool.
+
+```bash
+gosec ./...
+```
 ### run
 
 Run the application. It will serve on port 8005.

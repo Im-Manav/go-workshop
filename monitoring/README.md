@@ -1,25 +1,15 @@
 # Monitoring
 
-## Getting started!
-- docker compose up
-- go run main.go
+## API endpoints
 
+The app has a few endpoints that generate metrics
 
-## Links
-- localhost:8080/hello - This is your basic 200 route
-- localhost:8080/metrics - Where Promethus is displayed
-- localhost:8080/err - 404
-- localhost:8080/internal-err - 500
-- http://localhost:9090/query - prometheus
-- http://localhost:3001/ - grafana
+`/hello` - Just returns a hello back and counts as a succesful  Prometheus:
+To query prometheus go to `http://localhost:9090/query` on your browser.
 
-## Getting a dashboard
-    - dashboards
-    - create dashboard
-    - add visualisation
-    - promethus
-    - set up a metric from dropdown (uptimeTotal)
-    - run query
+Grafana:
+Go to `http://localhost:3001/` on your browser and logging with username `admin` and password `grafana`.
+
 ## Tasks
 
 ### docker-up
@@ -37,3 +27,39 @@ Start the go app. It will serve on port 8080
 ```bash
 go run .
 ```
+
+### get-hello
+
+Call to the `/hello` endpoint.
+
+```bash
+curl --verbose "http://localhost:8080/hello"
+```
+
+### get-metrics
+
+Call to the `metrics` endpoint.
+
+```bash
+curl --verbose "http://localhost:8080/metrics"
+```
+### notfound-err
+
+Call to the `/err` endpoint.
+
+```bash
+curl --verbose "http://localhost:8080/err"
+```
+
+### internal-err
+
+Call to the `/internal-err` endpoint.
+
+```bash
+curl --verbose "http://localhost:8080/internal-err"
+```
+
+## Next steps
+- Add another metric
+- Query them in Prometheus
+- Create a dashboard in grafana

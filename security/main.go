@@ -17,14 +17,6 @@ import (
 	"golang.org/x/text/language"
 )
 
-type T struct {
-	A string
-	B struct {
-		RenamedC int   `yaml:"c"`
-		D        []int `yaml:",flow"`
-	}
-}
-
 func run(ctx context.Context, log *slog.Logger) error {
 	for _, arg := range os.Args[1:] {
 		tag, err := language.Parse(arg)
