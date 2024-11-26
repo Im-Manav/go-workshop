@@ -2,6 +2,34 @@
 
 ## Tasks
 
+### install
+
+Install dependecies
+
+```bash
+go get .
+```
+
+### install-govulncheck
+
+```bash
+go install golang.org/x/vuln/cmd/govulncheck@latest
+```
+
+### install-gosec
+
+```bash
+go install github.com/securego/gosec/v2/cmd/gosec@latest
+```
+
+### install-grype
+
+For more info on installation https://github.com/anchore/grype?tab=readme-ov-file#installation
+
+```bash
+curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+```
+
 ### run
 
 Run the application. It will serve on port 8005.

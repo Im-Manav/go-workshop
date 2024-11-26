@@ -5,22 +5,38 @@ layout: center
 # Monitoring
 
 ---
+layout: center
+---
 
-# What's Monitoring? 
+## What's Monitoring? 
+Involves collecting and reporting on specific metrics to identify issues in a system. Monitoring can provide alerts and data on a system's performance, but it doesn't necessarily explain what's causing problems.
 
-Collecting live data about our program.
+---
+layout: center
+---
+Why should we care?
+---
+
+- Application's performance
+- Delight our users
+- Troubleshooting
+- Real-time data
+- Security
+---
+
+## How are we going to do that?
+
+Prometheus is an open-source monitoring and alerting tool designed for reliability and scalability. It collects and stores metrics as time-series data, provides a query language (PromQL).
+
+Grafana is an open-source visualization and analytics tool that transforms monitoring data into interactive dashboards. It supports multiple data sources, including Prometheus, and helps teams monitor, analyze, and alert on metrics in real-time.
 
 ---
 
-# Promethus and Graphana
 
-TODO: introduce these
-Promethus is an open source monitoring system
-Graphana is an observability platform and allows for visualisations
+---
+# Prometheus in Go
 
-# Promethus in Go
-
-Promethus has an offical go package
+Prometheus has an offical go package
 ```go
 var(
     uptimeTotal = prometheus.NewCounter(prometheus.CounterOpts{
@@ -40,8 +56,9 @@ func main(){
     }()
 }
 ```
+---
 
-# Promethus with API
+# Prometheus with API
 ```go
 var (
     httpRequestsTotal = prometheus.NewCounter(prometheus.CounterOpts{
@@ -84,16 +101,16 @@ func main() {
 ```
 
 ---
+
 # Red Method
 - Rate (the number of requests per second)
 - Errors (the number of those requests that are failing)
 - Duration (the amount of time those requests take)
+
 ---
 
 # Why Red?
 - Good for microservices, and records things that directly affect users
 - Good proxy to how happy your customers will be
 - Generally, you want to focus on business metrics rather than technical ones (cpu used etc)
-
-
 

@@ -15,21 +15,23 @@ transition: fade-out
 ---
 
 # Topics
-- Monitoring / metrics with Prometheus
-- Logging with slog
-- Benchmarking with built-in benchmarking tools by using memory and cpu profiling
-- Testing strategies
-- Vulnerability assessment using govulncheck, gosec
-- Docker, nix and containerisation
+- Testing stategies
+- Benchmarking with cpu and memory profiling
+- Security - Vulnerabilities and containerisation
+- Monitoring
 
 ---
-
-# Monitoring and metrics
-
-Add content for this topic
+src: ./pages/testing.md
+---
 
 ---
 src: ./pages/benchmark.md
 ---
 
+---
+src: ./pages/security.md
+---
 
+---
+src: ./pages/monitoring.md
+---
