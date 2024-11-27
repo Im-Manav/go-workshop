@@ -1,24 +1,38 @@
 ---
-# You can also start simply with 'default'
-theme: default
+theme: seriph
 title: Go Workshop - 102
 ---
 
 # Go Workshop - 102
 
-<!--
-The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
--->
+---
+
+# People
+
+## Me (Adrian Hesketh)
+
+- Using Go since 2016
+- "Famous" for the `templ` package
+  - `https://github.com/a-h/templ`
+- Built and operated production systems in Go
+  - UK's 3rd largest online pharmacy
+  - Vehicle insurance company
+
+## On the call
+
+- Arman
+- Mia
 
 ---
 transition: fade-out
 ---
 
-# Topics
-- Testing stategies
-- Benchmarking with cpu and memory profiling
+# Today's session
+
+- Testing
+- Performance analysis
 - Security - Vulnerabilities and containerisation
-- Monitoring
+- Observability
 
 ---
 src: ./pages/testing.md

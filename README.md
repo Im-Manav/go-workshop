@@ -96,3 +96,12 @@ docker load < result
 ```bash
 docker run -p 8080:8080 app:latest
 ```
+
+### slides
+
+dir: workshop-slides
+interactive: true
+
+```bash
+npm run dev
+```
