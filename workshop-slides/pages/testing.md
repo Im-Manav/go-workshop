@@ -321,5 +321,4 @@ func FuzzParse(f *testing.F) {
 - The `./security` directory contains a simple API.
 - One of the HTTP handlers is tested, with 100% code coverage.
 - Refactor the other handler to be testable, and write tests for it.
-- Stretch goal - fix the crash in the fuzzing test.
-
+- Stretch goal - fix the crash in the `./fuzzing` project.
