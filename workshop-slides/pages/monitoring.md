@@ -21,6 +21,7 @@ layout: center
 ---
 
 - Application performance
+- Business performance
 - Delight our users
 - Troubleshooting
 - Real-time data
