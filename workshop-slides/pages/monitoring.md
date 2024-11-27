@@ -29,14 +29,6 @@ layout: center
 
 ---
 
-### How are we going to do that?
-
-Prometheus is an open-source monitoring and alerting tool designed for reliability and scalability. It collects and stores metrics as time-series data, provides a query language (PromQL).
-
-Grafana is an open-source visualization and analytics tool that transforms monitoring data into interactive dashboards. It supports multiple data sources, including Prometheus, and helps teams monitor, analyze, and alert on metrics in real-time.
-
----
-
 ## Prometheus and Grafana architecture
 
 <img src="/prom.webp" style="height: 90%">
@@ -69,18 +61,11 @@ func main(){
 ---
 
 ## Prometheus with API
-```go{all|1-6|7-38|8-10|13-37}
-var (
-    httpRequestsTotal = prometheus.NewCounter(prometheus.CounterOpts{
-        Name: "http_requests_total",
-        Help: "Count of all HTTP requests",
-    })
-)
+```go{all|2-4|6-17|6|7|8|9-14|15-16}
 func main() {
     r := prometheus.NewRegistry()
     r.MustRegister(httpRequestsTotal)
     r.MustRegister(httpErrorsTotal)
-
 
     foundHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         httpRequestsTotal.Inc()
@@ -94,6 +79,27 @@ func main() {
         w.WriteHeader(http.StatusOK)
         w.Write([]byte("Hello from example application."))
     })
+}
+```
+---
+
+## Exposing our Metrics
+```go{all|4-6|6|8-14|15}    
+main(){
+    ...
+
+    mux := http.NewServeMux()
+    mux.Handle("/hello", foundHandler)
+    mux.Handle("/metrics", promhttp.HandlerFor(r, promhttp.HandlerOpts{Registry: r}))
+
+    srv := &http.Server{
+        Addr: ":8080",
+        Handler: h2c.NewHandler(
+            mux,
+            &http2.Server{},
+        )}
+
+    log.Fatal(srv.ListenAndServe())
 }
 ```
 ---
@@ -124,5 +130,4 @@ We will spend around 25 minutes.
 
 - Middlware to capture metrics (especially for APIs)
 - RED method - dashboards, metrics
-- OpenTelemetry
 - Data driven iteration!
