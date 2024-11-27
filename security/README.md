@@ -45,6 +45,15 @@ Run the gosec tool.
 ```bash
 gosec ./...
 ```
+
+### export-path
+
+If you get a "command not found" error, Go installs binaries in the $GOPATH/bin.
+
+```bash
+export PATH=$PATH:$GOPATH/bin
+```
+
 ### run
 
 Run the application. It will serve on port 8005.
