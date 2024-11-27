@@ -8,6 +8,7 @@ The app has a few endpoints that generate metrics
 To query prometheus go to `http://localhost:9090/query` on your browser.
 
 Grafana:
+
 Go to `http://localhost:3001/` on your browser and logging with username `admin` and password `grafana`.
 
 ## Tasks
@@ -43,6 +44,7 @@ Call to the `metrics` endpoint.
 ```bash
 curl --verbose "http://localhost:8080/metrics"
 ```
+
 ### notfound-err
 
 Call to the `/err` endpoint.
@@ -60,6 +62,7 @@ curl --verbose "http://localhost:8080/internal-err"
 ```
 
 ## Next steps
+
 - Add another metric
 - Query them in Prometheus
 - Create a dashboard in grafana

@@ -164,6 +164,7 @@ go test -bench=.
 ---
 layout: center
 ---
+
 ```sh{all|1-4|5-7}
 goos: linux
 goarch: amd64
@@ -173,6 +174,13 @@ BenchmarkPrimeNumbers-4            14588             82798 ns/op
 PASS
 ok      github.com/username/packagename     2.091s
 ```
+
+---
+
+# Visualisations
+
+<img src="/cpu-profile.png" alt="CPU Profile" style="height: 90%;"/>
+
 ---
 layout: center
 ---

@@ -74,11 +74,11 @@ ok      github.com/a-h/go-workshop-102    0.190s
 
 ---
 
-<img src="../public/coverage.png" style="height: 95%">
+<img src="/coverage.png" style="height: 95%">
 
 ---
 
-<img src="../public/test-runner.png" style="height: 95%">
+<img src="/test-runner.png" style="height: 95%">
 
 ---
 

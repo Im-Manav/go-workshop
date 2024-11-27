@@ -8,7 +8,8 @@ layout: center
 layout: center
 ---
 
-## What's Monitoring? 
+# What's Monitoring? 
+
 Collecting and reporting on specific metrics to identify issues in a system. Monitoring can provide alerts and data on a system's performance, but it doesn't necessarily explain what's causing problems.
 
 ---
@@ -19,7 +20,7 @@ layout: center
 
 ---
 
-- Application's performance
+- Application performance
 - Delight our users
 - Troubleshooting
 - Real-time data
@@ -32,6 +33,12 @@ layout: center
 Prometheus is an open-source monitoring and alerting tool designed for reliability and scalability. It collects and stores metrics as time-series data, provides a query language (PromQL).
 
 Grafana is an open-source visualization and analytics tool that transforms monitoring data into interactive dashboards. It supports multiple data sources, including Prometheus, and helps teams monitor, analyze, and alert on metrics in real-time.
+
+---
+
+## Prometheus and Grafana architecture
+
+<img src="/prom.webp" style="height: 90%">
 
 ---
 
