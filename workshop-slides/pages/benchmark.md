@@ -39,16 +39,18 @@ benchmarking
 ```
 
 ---
-layout: full
+layout: center
 ---
 
 ## The problem
 
 Two developers are arguing whether it's faster to use a map or a slice to search through a list of movies.
-![Remote Image](https://net-informations.com/faq/general/img/dictionary-vs-list-graph.png)
+
+<img src="/dictionary-vs-list-graph.png" alt="CPU Profile" style="width:70%;height: 85%;">
+
 ---
 
-## Developer's approach
+## Developer A
 
 Using a map 
 
@@ -73,7 +75,7 @@ func SearchFilmMap(films map[string]string, title string) (Film, error) {
 ```
 ---
 
-## Developer's approach
+## Developer B
 Using a slice
 
 ```go{all|2-3|4-7|8|11}{lines:true}
