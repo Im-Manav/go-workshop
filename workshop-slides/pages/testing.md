@@ -273,6 +273,39 @@ func TestCustomerHandler(t *testing.T) {
 
 ---
 
+# Fuzzing
+
+```
+go test -fuzz ./...
+```
+
+```go {|1-2|4-7}
+// Match the path /search/{entity}/{term}
+var r = regexp.MustCompile(`/search/([^/]+)/([^/]+)`)
+
+func Parse(path string) (entity, term string, err error) {
+	results := r.FindStringSubmatch(path)
+	return results[1], results[2], nil
+}
+```
+
+<br>
+
+```go {|2-3|4-9}
+func FuzzParse(f *testing.F) {
+	f.Add("/search/abc/def")
+	f.Add("/search/abc/def/ghi")
+	f.Fuzz(func(t *testing.T, path string) {
+		_, _, err := Parse(path)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+	})
+}
+```
+
+---
+
 # Tips
 
 - There are 3rd party assertion libraries, but not really needed
@@ -288,3 +321,5 @@ func TestCustomerHandler(t *testing.T) {
 - The `./security` directory contains a simple API.
 - One of the HTTP handlers is tested, with 100% code coverage.
 - Refactor the other handler to be testable, and write tests for it.
+- Stretch goal - fix the crash in the fuzzing test.
+

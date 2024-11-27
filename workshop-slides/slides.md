@@ -24,8 +24,6 @@ title: Go Workshop - 102
 - Mia
 
 ---
-transition: fade-out
----
 
 # Today's session
 
@@ -33,6 +31,18 @@ transition: fade-out
 - Performance analysis
 - Security - Vulnerabilities and containerisation
 - Observability
+
+---
+
+# Setup
+
+- Clone https://github.com/a-h/go-workshop-102
+- Install Go
+
+- `docker pull ubuntu:jammy`
+- `docker pull golang:1.23`
+- `docker pull prom/prometheus`
+- `docker pull grafana/grafana`
 
 ---
 src: ./pages/testing.md
