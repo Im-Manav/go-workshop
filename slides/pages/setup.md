@@ -19,6 +19,15 @@ I recommend developing in WSL if you're using Windows, but do remember to instal
 </Tip>
 
 ---
+
+# Installing Go
+
+- https://go.dev/dl/
+
+- Windows / Mac - download and run the installer
+- Linux - download and extract the tarball, and add the Go binary directory to your PATH, see https://go.dev/doc/install
+
+---
 layout: two-cols-header
 ---
 
@@ -35,8 +44,8 @@ https://go.dev/blog/survey2024-h2-results#editor-awareness-and-preferences
 ::right::
 
 <Tip>
-Java developers often gravitate towards JetBrains's Goland IDE or IntelliJ with the Go plugin, but I like Neovim myself.
+Java developers often gravitate towards JetBrains's Goland IDE or IntelliJ with the Go plugin.
 
-The Go team maintains the VS Code Go extension, and maintains `gopls`, the language server that provides IDE features like auto-completion and go-to-definition.
+The Go team maintains the VS Code Go extension, and maintains `gopls`, the language server that provides IDE features like auto-completion and go-to-definition, so the experience across editors is quite consistent.
 </Tip>
 
