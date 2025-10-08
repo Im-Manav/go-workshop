@@ -1,0 +1,46 @@
+.slidev-layout {
+	padding: 2rem;
+	line-height: inherit;
+	font-family: "Avenir", "Monaco", "Consolas";
+}
+
+.slidev-layout h1 {
+}
+
+.slidev-layout h2 {
+	line-height: inherit;
+	margin-bottom: 1rem;
+}
+
+.slidev-layout h3 {
+	line-height: inherit;
+	margin-bottom: 1rem;
+}
+
+.slidev-layout li {
+	line-height: inherit;
+	list-style: "-";
+	padding-left: 0.5rem;
+}
+
+.slidev-layout ul {
+	margin-bottom: 1rem;
+}
+
+/* Don't apply bottom margin to ul if inside an li */
+.slidev-layout li > ul {
+	margin-bottom: 0;
+}
+
+#app #slide-content :not(pre) > code {
+	padding: 0.1em 0.5em;
+	background-color: #171717;
+}
+
+:not(pre) > code::before, :not(pre) > code::after {
+  content: initial;
+}
+
+.col-right {
+	margin-left: 0.5em;
+}
