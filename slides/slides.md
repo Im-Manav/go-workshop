@@ -67,6 +67,10 @@ The 2xx monitoring and security sessions use some container images, so it's a go
 - Monitoring with Prometheus and Grafana
 
 ---
+src: ./pages/intro.md
+---
+
+---
 src: ./pages/setup.md
 ---
 
