@@ -14,6 +14,8 @@ In my case, I plan to put my code in Github, my Github username is `a-h`, and my
 go mod init github.com/a-h/hello
 ```
 
+Tip: Go module and package names are always lowercase, e.g. `github.com/a-h/hello`, not `github.com/a-h/Hello`. Package names shouldn't contain underscores or hyphens.
+
 ## Add your code
 
 Once you have your module initialised, create a `main.go` file with the following code:
