@@ -66,4 +66,4 @@ x, y := 4, 5
 
 ## Task
 
-The `main.go` file contains a 
+The `main.go` file contains a `main` function that declares and initializes variables of different types, but it won't compile because the types are incorrect. Your task is to fix the types of the variables so that the code compiles successfully and prints the expected output.
