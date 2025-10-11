@@ -50,13 +50,9 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type UsersPostRequest struct {
-	models.UserFields
-}
-
 func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("Creating user from request body")
-	var req UsersPostRequest
+	var req models.UsersPostRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.log.Error("Error decoding request body", slog.Any("error", err))
 		// Never expose internal error details to the client.
