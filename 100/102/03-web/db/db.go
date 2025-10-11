@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/a-h/go-workshop/100/102/01-web/models"
+	"github.com/a-h/go-workshop/100/102/03-web/models"
 	"github.com/a-h/kv"
 	"github.com/google/uuid"
 )

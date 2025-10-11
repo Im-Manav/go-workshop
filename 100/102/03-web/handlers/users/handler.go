@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/a-h/go-workshop/100/102/01-web/db"
-	"github.com/a-h/go-workshop/100/102/01-web/models"
+	"github.com/a-h/go-workshop/100/102/03-web/db"
+	"github.com/a-h/go-workshop/100/102/03-web/models"
 )
 
 func NewHandler(log *slog.Logger, db *db.DB) *Handler {

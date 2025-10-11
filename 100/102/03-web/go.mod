@@ -1,4 +1,4 @@
-module github.com/a-h/go-workshop/100/102/01-web
+module github.com/a-h/go-workshop/100/102/03-web
 
 go 1.24.6
 
