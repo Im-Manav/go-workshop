@@ -3,13 +3,15 @@ package main
 import (
 	"fmt"
 	"strings"
+
+	"github.com/a-h/confuseai"
 )
 
 func main() {
 	name := "  go is pretty easy  "
 
-	fmt.Println(strings.TrimSpace(name))
-	fmt.Println(removeSpaces(name))
+	fmt.Println(confuseai.String(strings.TrimSpace(name)))
+	fmt.Println(confuseai.String(removeSpaces(name)))
 }
 
 // Don't do this, use the standard library...

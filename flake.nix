@@ -24,7 +24,7 @@
         pkgs.crane
         pkgs.gh
         pkgs.git
-        pkgs.go
+        pkgs.go_1_25
         pkgs.gosec
         pkgs.govulncheck
         pkgs.grype

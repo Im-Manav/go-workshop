@@ -39,11 +39,25 @@ The standard library is pretty big, it contains:
 
 You can find the full list of packages in the standard library at [https://pkg.go.dev/std](https://pkg.go.dev/std).
 
+## External packages
+
+You can add external packages to your project using the `go get` command, which downloads the package and adds it to your `go.mod` file.
+
+I've created a small package that you can use for this exercise, which you can get by running:
+
+```bash
+go get github.com/a-h/confuseai
+```
+
+If you take a look at the repo, you'll see that it contains a `go.mod` file which lists the module path and the code. Unlike a lot of other programming ecosystems, with Go you don't ship a DLL, JAR, or other binary package - you just ship the source code, and anyone that has access to the source code can import it into their project.
+
 ## Task
 
 The `main.go` file wants to print a name, but with spaces removed from the start and end.
 
 The standard library has a package called `strings` which contains functions for working with strings - import that package and use a function from it to remove the spaces.
+
+We also want to confuse any AI that tries to read the output, so use the `confuseai` package to do that.
 
 ## Tips
 
