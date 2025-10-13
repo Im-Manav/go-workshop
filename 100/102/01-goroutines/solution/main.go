@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 )
 
 func newDB() (string, error) {
@@ -36,19 +38,34 @@ func main() {
 func run(_ context.Context, log *slog.Logger) error {
 	startTime := time.Now()
 
-	db, err := newDB()
-	if err != nil {
-		return err
-	}
+	var wg errgroup.Group
 
-	config, err := getConfig()
-	if err != nil {
-		return err
-	}
+	// Create variables to store the results of each goroutine.
+	var db, config, service string
 
-	service, err := connectToService()
-	if err != nil {
+	// Note the use of closures to capture the variables, and the use of a named
+	// return value to simplify error handling.
+	wg.Go(func() (err error) {
+		log.Debug("Starting database connection")
+		db, err = newDB()
 		return err
+	})
+
+	wg.Go(func() (err error) {
+		log.Debug("Loading configuration")
+		config, err = getConfig()
+		return err
+	})
+
+	wg.Go(func() (err error) {
+		log.Debug("Connecting to external service")
+		service, err = connectToService()
+		return err
+	})
+
+	err := wg.Wait()
+	if err != nil {
+		return fmt.Errorf("failed to initialise application: %w", err)
 	}
 
 	log.Info("Application started successfully", slog.Duration("startTimeMs", time.Duration(time.Since(startTime).Milliseconds())))
