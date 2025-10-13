@@ -1,56 +1,62 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"math/rand"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
-func fanout(input chan int, outputs ...chan int) {
-	for v := range input {
-		for _, o := range outputs {
-			o <- v
+func isPrime(n int) bool {
+	if n < 2 {
+		return false
+	}
+	for i := 2; i*i <= n; i++ {
+		if n%i == 0 {
+			return false
 		}
 	}
-	for _, o := range outputs {
-		close(o)
-	}
+	return true
 }
 
 func main() {
-	messages := make(chan int)
+	start := time.Now()
 
+	ctx, cancel := context.WithCancel(context.Background())
+
+	// Handle interrupts to allow graceful shutdown. If you press Ctrl+C,
+	// the program will stop accepting new jobs and finish processing before
+	// exiting.
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
 	go func() {
-		for i := 0; i < 10; i++ {
-			messages <- rand.Intn(10)
-		}
-		close(messages)
+		<-sigs
+		cancel()
 	}()
 
-	receiverA := make(chan int, 10)
-	receiverB := make(chan int, 10)
+	primeOrdinal := 1
+	var timeToFirst1000KPrimes time.Duration
 
-	aComplete := make(chan bool)
-	bComplete := make(chan bool)
-
-	go func() {
-		for n := range receiverA {
-			fmt.Printf("receiver A: %d\n", n)
+	var i int
+	for {
+		if isPrime(i) {
+			fmt.Printf("Prime %d found: %d\n", primeOrdinal, i)
+			primeOrdinal++
 		}
-		aComplete <- true
-	}()
-	go func() {
-		for n := range receiverB {
-			time.Sleep(time.Second)
-			fmt.Printf("receiver B: %d\n", n)
+		if primeOrdinal == 1000_000 {
+			timeToFirst1000KPrimes = time.Since(start)
 		}
-		bComplete <- true
-	}()
+		if ctx.Err() != nil {
+			break
+		}
+		i++
+	}
 
-	fanout(messages, receiverA, receiverB)
-
-	// Let's timeout after 3 seconds.
-	<-aComplete
-	<-bComplete
-	fmt.Println("Everything is finished")
+	if primeOrdinal <= 1000_000 {
+		fmt.Printf("Total primes found: %d\n", primeOrdinal-1)
+	} else {
+		fmt.Printf("Time to find first 1000,000 primes: %v\n", timeToFirst1000KPrimes)
+	}
 }
