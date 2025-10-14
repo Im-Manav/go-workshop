@@ -7,19 +7,27 @@ func TestParse(t *testing.T) {
 		input  string
 		entity string
 		term   string
+		ok     bool
 	}{
 		{
 			input:  "/search/abc/def",
 			entity: "abc",
 			term:   "def",
+			ok:     true,
+		},
+		{
+			input:  "/rch/xyz/123",
+			entity: "",
+			term:   "",
+			ok:     false,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.input, func(t *testing.T) {
-			actualEntity, actualTerm, err := Parse(test.input)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+			actualEntity, actualTerm, ok := Parse(test.input)
+			if ok != test.ok {
+				t.Errorf("expected ok %v, got %v", test.ok, ok)
 			}
 			if actualEntity != test.entity {
 				t.Errorf("expected entity %q, got %q", test.entity, actualEntity)
@@ -34,10 +42,8 @@ func TestParse(t *testing.T) {
 func FuzzParse(f *testing.F) {
 	f.Add("/search/abc/def")
 	f.Add("/search/abc/def/ghi")
+	f.Add("/rch/xyz/123")
 	f.Fuzz(func(t *testing.T, path string) {
-		_, _, err := Parse(path)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		_, _, _ = Parse(path)
 	})
 }
