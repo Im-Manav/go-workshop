@@ -31,7 +31,7 @@ func (s clientDB) GetCustomer(id string) (models.Customer, error) {
 	row := s.dbClient.QueryRow(query)
 	if err := row.Scan(&c.ID, &c.Name, &c.Surname, &c.Company); err != nil {
 		if err == sql.ErrNoRows {
-			return c, fmt.Errorf("id %d: no such id", id)
+			return c, fmt.Errorf("id %s: no such id", id)
 		}
 		return c, fmt.Errorf("id %s: %v", id, err)
 	}

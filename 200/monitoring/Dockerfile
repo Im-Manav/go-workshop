@@ -14,7 +14,7 @@ COPY . ./
 RUN go build -o app
 
 # Build a small image for the application.
-FROM gcr.io/distroless/base-debian12 AS build-release-stage
+FROM gcr.io/distroless/base-debian12 AS runtime-stage
 
 WORKDIR /
 
