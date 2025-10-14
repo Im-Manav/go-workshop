@@ -4,8 +4,9 @@ import "testing"
 
 func TestParse(t *testing.T) {
 	tests := []struct {
-		input        string
-		entity, term string
+		input  string
+		entity string
+		term   string
 	}{
 		{
 			input:  "/search/abc/def",
