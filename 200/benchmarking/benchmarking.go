@@ -17,14 +17,11 @@ type Film struct {
 
 var ErrFilmNotFound = errors.New("film not found")
 
-func NewFilmSlice() ([]Film, error) {
-	var films []Film
-
-	err := json.Unmarshal(jsonFile, &films)
+func NewFilmSlice() (films []Film, err error) {
+	err = json.Unmarshal(jsonFile, &films)
 	if err != nil {
 		return nil, err
 	}
-
 	return films, nil
 }
 
@@ -37,7 +34,6 @@ func NewFilmMap() (map[string]string, error) {
 	for _, film := range s {
 		films[film.Title] = film.Extract
 	}
-
 	return films, nil
 }
 
@@ -49,7 +45,6 @@ func SearchFilmMap(films map[string]string, title string) (Film, error) {
 
 	r := strings.NewReplacer("-", "", ":", "")
 	title = r.Replace(title)
-
 	title = strings.ToLower(title)
 
 	f := Film{

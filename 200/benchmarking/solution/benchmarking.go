@@ -17,15 +17,9 @@ type Film struct {
 
 var ErrFilmNotFound = errors.New("film not found")
 
-func NewFilmSlice() ([]Film, error) {
-	var films []Film
-
-	err := json.Unmarshal(jsonFile, &films)
-	if err != nil {
-		return nil, err
-	}
-
-	return films, nil
+func NewFilmSlice() (films []Film, err error) {
+	err = json.Unmarshal(jsonFile, &films)
+	return films, err
 }
 
 func NewFilmMap() (map[string]string, error) {
@@ -37,8 +31,14 @@ func NewFilmMap() (map[string]string, error) {
 	for _, film := range s {
 		films[film.Title] = film.Extract
 	}
-
 	return films, nil
+}
+
+// Precompute the strings.Replacer to avoid doing it on every search.
+var punctuationRemover = strings.NewReplacer("-", "", ":", "")
+
+func normaliseTitle(title string) string {
+	return strings.ToLower(punctuationRemover.Replace(title))
 }
 
 func SearchFilmMap(films map[string]string, title string) (Film, error) {
@@ -46,14 +46,8 @@ func SearchFilmMap(films map[string]string, title string) (Film, error) {
 	if !ok {
 		return Film{}, ErrFilmNotFound
 	}
-
-	title = strings.ReplaceAll(title, "-", "")
-	title = strings.ReplaceAll(title, ":", "")
-
-	title = strings.ToLower(title)
-
 	f := Film{
-		Title:   title,
+		Title:   normaliseTitle(title),
 		Extract: v,
 	}
 	return f, nil
@@ -62,10 +56,7 @@ func SearchFilmMap(films map[string]string, title string) (Film, error) {
 func SearchFilmSlice(films []Film, title string) (Film, error) {
 	for _, film := range films {
 		if film.Title == title {
-			film.Title = strings.ReplaceAll(film.Title, "-", "")
-			film.Title = strings.ReplaceAll(film.Title, ":", "")
-
-			film.Title = strings.ToLower(film.Title)
+			film.Title = normaliseTitle(film.Title)
 			return film, nil
 		}
 	}
