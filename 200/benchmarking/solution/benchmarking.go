@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"errors"
+	"slices"
 	"strings"
 )
 
@@ -11,54 +12,62 @@ import (
 var jsonFile []byte
 
 type Film struct {
-	Title   string
-	Extract string
+	NormalisedTitle string
+	Title           string
+	Extract         string
 }
 
 var ErrFilmNotFound = errors.New("film not found")
 
 func NewFilmSlice() (films []Film, err error) {
 	err = json.Unmarshal(jsonFile, &films)
+	if err != nil {
+		return nil, err
+	}
+	// Pre-normalise titles to reduce work after returning results.
+	for i := range films {
+		films[i].NormalisedTitle = strings.ToLower(punctuationRemover.Replace(films[i].Title))
+	}
+	// Pre-sort the slice to enable binary searching.
+	slices.SortFunc(films, func(a, b Film) int {
+		return strings.Compare(a.Title, b.Title)
+	})
 	return films, err
 }
 
-func NewFilmMap() (map[string]string, error) {
+// Precompute the strings.Replacer.
+var punctuationRemover = strings.NewReplacer("-", "", ":", "")
+
+func NewFilmMap() (map[string]Film, error) {
 	s, err := NewFilmSlice()
 	if err != nil {
 		return nil, err
 	}
-	films := make(map[string]string)
+	filmTitleToFilm := make(map[string]Film)
 	for _, film := range s {
-		films[film.Title] = film.Extract
+		filmTitleToFilm[film.Title] = film
 	}
-	return films, nil
+	return filmTitleToFilm, nil
 }
 
-// Precompute the strings.Replacer to avoid doing it on every search.
-var punctuationRemover = strings.NewReplacer("-", "", ":", "")
-
-func normaliseTitle(title string) string {
-	return strings.ToLower(punctuationRemover.Replace(title))
-}
-
-func SearchFilmMap(films map[string]string, title string) (Film, error) {
+func SearchFilmMap(films map[string]Film, title string) (Film, error) {
+	// Since we pre-computed the normalised titles, we can just do a direct
+	// lookup in the map without needing to normalise the title.
 	v, ok := films[title]
 	if !ok {
 		return Film{}, ErrFilmNotFound
 	}
-	f := Film{
-		Title:   normaliseTitle(title),
-		Extract: v,
-	}
-	return f, nil
+	return v, nil
 }
 
 func SearchFilmSlice(films []Film, title string) (Film, error) {
-	for _, film := range films {
-		if film.Title == title {
-			film.Title = normaliseTitle(film.Title)
-			return film, nil
-		}
+	// Since we've pre-sorted the slice, we can use binary search which is much
+	// faster than linear search.
+	index, ok := slices.BinarySearchFunc(films, title, func(a Film, b string) int {
+		return strings.Compare(a.Title, b)
+	})
+	if !ok {
+		return Film{}, ErrFilmNotFound
 	}
-	return Film{}, ErrFilmNotFound
+	return films[index], nil
 }
