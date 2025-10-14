@@ -1,105 +1,122 @@
 package main
 
 import (
-	"errors"
-	"log"
-	"math/rand"
+	"context"
+	"fmt"
+	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
-)
-
-var (
-	// Create counters
-	httpRequestsTotal = prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "http_requests_total",
-		Help: "Count of all HTTP requests",
-	})
-	httpErrorsTotal = prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "http_errors_total",
-		Help: "Count of all HTTP errors",
-	})
-	uptimeTotal = prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "uptime_total",
-		Help: "uptime of app in seconds",
-	})
+	"github.com/a-h/go-workshop/200/monitoring/metrics"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	"go.opentelemetry.io/otel/metric"
+	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
+	log := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	ctx := context.Background()
 
-	// Register Prometheus collectors, collect metrics
-	r := prometheus.NewRegistry()
-	r.MustRegister(httpRequestsTotal)
-	r.MustRegister(httpErrorsTotal)
-	r.MustRegister(uptimeTotal)
+	err := run(ctx, log)
+	if err != nil {
+		log.Error("failed to run example", slog.Any("error", err))
+	}
+}
 
-	// Go routine
+func run(ctx context.Context, log *slog.Logger) (err error) {
+	log.Info("starting example")
+
+	// Configure Prometheus metrics.
+	m, err := metrics.New(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to create metrics: %w", err)
+	}
+	// Use a non-standard scrape port.
+	go metrics.ListenAndServe(":9191")
+
+	// Configure tracing to output to stdout (not useful, actually).
+	// If you're using AWS, you'd use X-Ray here instead.
+	traceExporter, err := stdouttrace.New()
+	if err != nil {
+		return fmt.Errorf("failed to create trace exporter: %w", err)
+	}
+	tp := tracesdk.NewTracerProvider(tracesdk.WithBatcher(traceExporter))
+	otel.SetTracerProvider(tp)
+	tracer := tp.Tracer("github.com/a-h/go-workshop/200/observability")
+
+	// Count uptime in seconds. This isn't perfectly accurate, because
+	// time.Sleep sleeps for _at least_ the given duration, but it's
+	// close enough for this use case.
 	go func() {
+		// Manually define a trace for this background operation.
+		ctx, span := tracer.Start(context.Background(), "background-operation")
+		defer span.End()
 		for {
-			uptimeTotal.Inc()
+			m.UptimeTotalSeconds.Add(ctx, 1)
+			log.Debug("inremented uptime counter")
 			time.Sleep(time.Second)
 		}
 	}()
 
-	// Create handlers (3 handlers that have different headers)
-	foundHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		httpRequestsTotal.Inc()
-		err := doWork()
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
-			httpErrorsTotal.Inc()
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Hello from example application."))
-	})
-	notfoundHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		httpRequestsTotal.Inc()
-		httpErrorsTotal.Inc()
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("NotFound"))
-	})
-	internalErrorHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		httpRequestsTotal.Inc()
-		httpErrorsTotal.Inc()
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("InternalServerError"))
-	})
-
-	// Create the mux server and add the handlers (Wrapped by counter handler)
+	// Stand up the application.
 	mux := http.NewServeMux()
-	mux.Handle("/hello", foundHandler)
-	mux.Handle("/err", notfoundHandler)
-	mux.Handle("/internal-err", internalErrorHandler)
-	mux.Handle("/metrics", promhttp.HandlerFor(r, promhttp.HandlerOpts{Registry: r}))
+	mux.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Hello!"))
+	})
+	mux.Handle("/not-found", http.NotFoundHandler())
+	mux.HandleFunc("/internal-err", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+	})
 
-	// Host it
-	srv := &http.Server{
-		Addr: ":8080",
-		Handler: h2c.NewHandler(
-			mux,
-			&http2.Server{},
-		)}
+	// Wrap the mux with our counter middleware.
+	withCounter := NewMetricsMiddleware(m.HTTPRequestsTotal, m.RequestDurationSeconds, mux)
 
-  log.Printf("server starting on port %s\n", srv.Addr)
-	log.Fatal(srv.ListenAndServe())
+	// Automatically trace all incoming requests.
+	// This doesn't do anything useful unless you have a trace provider configured, e.g. AWS X-Ray.
+	withOtelHTTP := otelhttp.NewHandler(withCounter, "http")
+
+	s := &http.Server{
+		Addr:              ":8080",
+		Handler:           withOtelHTTP,
+		ReadHeaderTimeout: 5 * time.Minute,
+		WriteTimeout:      5 * time.Minute,
+		IdleTimeout:       5 * time.Minute,
+	}
+	return s.ListenAndServe()
 }
 
-func doWork() error {
-	// Simulate a wait time
-	waitTime := time.Duration(rand.Intn(600)) * time.Millisecond
-	time.Sleep(waitTime)
+// The metrics middleware could be compressed to an anonymous function similar to this:
+//
+// totalMiddleware := func(next http.Handler) http.Handler {
+//		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//			m.HTTPRequestsTotal.Add(r.Context(), 1)
+//			next.ServeHTTP(w, r)
+//		})
+//	}
+//
+// But for clarity, it's been expanded out here.
 
-	// Randomize fail rate
-	if rand.Float64() < 0.2 {
-		return errors.New("doWork error")
+func NewMetricsMiddleware(httpRequestsTotal metric.Int64Counter, requestDurationSeconds metric.Float64Histogram, next http.Handler) http.Handler {
+	return MetricsMiddleware{
+		httpRequestsTotal:      httpRequestsTotal,
+		requestDurationSeconds: requestDurationSeconds,
+		next:                   next,
 	}
+}
 
-	return nil
+type MetricsMiddleware struct {
+	httpRequestsTotal      metric.Int64Counter
+	requestDurationSeconds metric.Float64Histogram
+	next                   http.Handler
+}
+
+func (c MetricsMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	c.httpRequestsTotal.Add(r.Context(), 1)
+	c.next.ServeHTTP(w, r)
+	c.requestDurationSeconds.Record(r.Context(), time.Since(start).Seconds())
 }

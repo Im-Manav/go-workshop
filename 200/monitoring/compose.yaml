@@ -1,4 +1,14 @@
 services:
+  app:
+    build: .
+    container_name: app
+    expose:
+      - 9191        # visible to other containers
+    ports:
+      - 8080:8080   # visible to host
+      - 9191:9191   # visible to host
+    restart: unless-stopped
+
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -7,9 +17,11 @@ services:
     ports:
       - 9090:9090
     restart: unless-stopped
+    user: "${UID}:${GID}"
     volumes:
       - ./prometheus:/etc/prometheus
       - prom_data:/prometheus
+
   grafana:
     image: grafana/grafana
     container_name: grafana
@@ -19,7 +31,9 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=grafana
+    user: "${UID}:${GID}"
     volumes:
       - ./grafana:/etc/grafana/provisioning/datasources
+
 volumes:
   prom_data:
