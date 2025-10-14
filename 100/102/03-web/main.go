@@ -11,8 +11,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/a-h/go-workshop/100/102/01-web/db"
-	"github.com/a-h/go-workshop/100/102/01-web/handlers/users"
+	"github.com/a-h/go-workshop/100/102/03-web/db"
+	"github.com/a-h/go-workshop/100/102/03-web/handlers/users"
 	"github.com/a-h/kv/sqlitekv"
 	"zombiezen.com/go/sqlite/sqlitex"
 )
