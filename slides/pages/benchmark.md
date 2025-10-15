@@ -1,128 +1,31 @@
 ---
-layout: center
+layout: section
 ---
 
 # Benchmarking
 
 ---
 
-## So what is Benchmarking? 
+## What is benchmarking?
 
-A technique for measuring the performance of code to identify bottlenecks and improve efficiency.
-
----
-layout: center
----
-
-## But how do we do that in Go?
+> A technique for measuring the performance of code to identify bottlenecks and improve efficiency.
 
 ---
-layout: center
----
 
-With the standard library testing package of course!
-
----
-layout: center
----
-
-In the `go-workshop-102` folder there is a folder called `benchmarking`. We will now go through what files are in there and the exercise we are looking to solve.
-
-```bash
-benchmarking
-├── README.md
-├── benchmarking.go
-├── benchmarking_test.go
-├── movies-1990s.json
-└── solution
-    └── benchmarking.go
-```
-
----
-layout: center
----
-
-## The problem
+## Benchmark tests
 
 Two developers are arguing whether it's faster to use a map or a slice to search through a list of movies.
 
-<img src="/dictionary-vs-list-graph.png" alt="CPU Profile" style="width:70%;height: 85%;">
+We expect the map to be faster once there's a non-trivial number of items in the list.
 
----
+<img src="/dictionary-vs-list-graph.png" alt="CPU Profile">
 
-## Developer A
+But how can we prove it?
 
-Using a map 
-
-```go{all|2-5|7-10|12-16}{lines:true}
-func SearchFilmMap(films map[string]string, title string) (Film, error) {
-	v, ok := films[title]
-	if !ok {
-		return Film{}, ErrFilmNotFound
-	}
-
-	r := strings.NewReplacer("-", "", ":", "")
-	title = r.Replace(title)
-
-	title = strings.ToLower(title)
-
-	f := Film{
-		Title:   title,
-		Extract: v,
-	}
-	return f, nil
-}
-```
----
-
-## Developer B
-Using a slice
-
-```go{all|2-3|4-7|8|11}{lines:true}
-func SearchFilmSlice(films []Film, title string) (Film, error) {
-	for _, film := range films {
-		if film.Title == title {
-			r := strings.NewReplacer("-", "", ":", "")
-			film.Title = r.Replace(film.Title)
-
-			film.Title = strings.ToLower(film.Title)
-			return film, nil
-		}
-	}
-	return Film{}, ErrFilmNotFound
-}
-```
----
-
-## Benchmark - benchmark.go
-
-```go{all|1-2|4-18|12|4-18}
-//go:embed movies-1990s.json
-var jsonFile []byte
-
-type Film struct {
-	Title   string
-	Extract string
-}
-
-func NewFilmSlice() ([]Film, error) {
-	var films []Film
-
-	err := json.Unmarshal(jsonFile, &films)
-	if err != nil {
-		return nil, err
-	}
-
-	return films, nil
-}
-
-
-// search methods
-```
 ---
 
 ## Benchmark Test - benchmark_test.go
-```go{all|1|3-11|8|12-20|21-22|23-24}{lines:true}
+```go{all|1|3-11|8-10|12-20|21-22|23-24}{lines:true}
 import "testing"
 
 func benchmarkFilmMap(title string, b *testing.B) {
@@ -130,7 +33,7 @@ func benchmarkFilmMap(title string, b *testing.B) {
 	if err != nil {
 		b.Error(err)
 	}
-	for n := 0; n < b.N; n++ {
+	for range b.N {
 		SearchFilmMap(m, title)
 	}
 }
@@ -139,7 +42,7 @@ func benchmarkFilmSlice(title string, b *testing.B) {
 	if err != nil {
 		b.Error(err)
 	}
-	for n := 0; n < b.N; n++ {
+	for range b.N {
 		SearchFilmSlice(s, title)
 	}
 }
@@ -150,106 +53,54 @@ func BenchmarkSliceMissingFilm(b *testing.B)  { benchmarkFilmSlice("Spider-Man 3
 ```
 
 ---
-layout: center
----
 
-## Let's get benchmarking!
+# Running benchmark tests
 
----
-layout: center
----
-
-To run benchmark tests we will have to run the following command
 ```sh
 go test -bench=.
 ```
----
-layout: center
+
 ---
 
-```sh{all|1-4|5-7}
+# Output
+
+```
 goos: linux
 goarch: amd64
-pkg: github.com/user/packagename
-cpu: Intel(R) Core(TM) i7-7560U CPU @ 2.40GHz
-BenchmarkPrimeNumbers-4            14588             82798 ns/op
+pkg: github.com/a-h/go-workshop/200/benchmarking
+cpu: 11th Gen Intel(R) Core(TM) i7-11850H @ 2.50GHz
+BenchmarkMapExistingFilm-16               863116              1392 ns/op
+BenchmarkMapMissingFilm-16              157165226                7.919 ns/op
+BenchmarkSliceExistingFilm-16             369318              3259 ns/op
+BenchmarkSliceMissingFilm-16              579453              2021 ns/op
 PASS
-ok      github.com/username/packagename     2.091s
+ok      github.com/a-h/go-workshop/200/benchmarking     7.782s
 ```
 
 ---
 
-# Visualisations
+# Profiling
 
 <img src="/cpu-profile.png" alt="CPU Profile" style="height: 90%;"/>
 
 ---
-layout: center
+layout: two-cols-header
 ---
 
-Open the README.md in `benchamrking/` folder and follow the instructions.
+# Profile guided compiler optimisation
 
-We will spend around 25 minutes.
+::left::
 
----
+Profile Guided Optimisation (PGO) takes real world performance data and use it to inform optimisations during the compilation process.
 
-## Tips
+You might see up to 15% performance improvements with PGO.
 
-- Use benchmarking!
-- Use profiling
-- Focus on isolated units of code
-- Focus on areas with significant performance impact
-- Data driven
+::right::
 
----
-layout: center
----
-
-## Wait there is more!
-
-Profile Guided Optimisation (PGO) starting from Go 1.20
-
----
-layout: center
----
-
-## PGO Cycle
-
-Build and release initial binary (without PGO) 
-
-```go
-
-go build
+```mermaid
+flowchart TD
+    A[go build] --> B[Deploy]
+    B --> C[Collect production CPU profiles]
+    C --> D[go build -pgo=profile.pprof]
+    D --> B
 ```
----
-layout: center
----
-
-## PGO Cycle
-
-Collect profiles from production using `runtime/pprof` or `net/http/pprof` standard library packages.
-
----
-layout: center
----
-
-## PGO Cycle
-
-On your next release build from the latest source and provide the production profile!
-
-```go
-go build -pgo default.pgo
-```
-
----
-layout: center
----
-
-## PGO Cycle
-1. Build and release an initial binary (without PGO).
-2. Collect profiles from production.
-3. When it’s time to release an updated binary, build from the latest source and provide the production profile.
-4. GOTO 2
-
-More info: https://go.dev/doc/pgo
-

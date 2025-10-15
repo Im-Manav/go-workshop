@@ -18,9 +18,10 @@
 }
 
 .slidev-layout li {
-	line-height: inherit;
+	line-height: 1.5;
 	list-style: "-";
 	padding-left: 0.5rem;
+	padding-top: 1rem;
 }
 
 .slidev-layout ul {

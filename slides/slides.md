@@ -7,24 +7,6 @@ title: Go Workshop
 
 ---
 
-# People
-
-## Me (Adrian Hesketh)
-
-- Using Go since 2016
-- "Famous" for the `templ` package
-  - `https://github.com/a-h/templ`
-- Built and operated production systems in Go
-  - UK's 3rd largest online pharmacy
-  - Vehicle insurance company
-
-## Contributors
-
-- Arman
-- Mia
-
----
-
 # Setup
 
 - Clone https://github.com/a-h/go-workshop
@@ -33,7 +15,9 @@ title: Go Workshop
 The 2xx monitoring and security sessions use some container images, so it's a good idea to pull them down now if you can, since the downloads might be slow during the session.
 
 - `docker pull ubuntu:jammy`
+- `docker pull gcr.io/distroless/base-debian12`
 - `docker pull golang:1.23`
+- `docker pull golang:1.25`
 - `docker pull prom/prometheus`
 - `docker pull grafana/grafana`
 
@@ -71,6 +55,10 @@ src: ./pages/intro.md
 ---
 
 ---
+src: ./pages/experience.md
+---
+
+---
 src: ./pages/setup.md
 ---
 
@@ -84,8 +72,4 @@ src: ./pages/benchmark.md
 
 ---
 src: ./pages/security.md
----
-
----
-src: ./pages/monitoring.md
 ---

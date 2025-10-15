@@ -1,27 +1,29 @@
 ---
-layout: center
+layout: section
 ---
 
 # Security
 
 ---
 
-# How to keep our Go apps safe
+# Protecting supply chain
 
-## Supply chain
-
-- Go modules, lock &amp; cache
+- `go.sum` &amp; package cache
 - Vendoring
 - CodeQL
+- `govulncheck`
 
-## SAST
+---
 
-- govulncheck - tool written by the Go security team
-- gosec - code security scanner
-- grype - vulnerability scanner for containers
+# Static Analysis (SAST)
+
+- `gosec` - code security scanner
+- `grype` - vulnerability scanner for containers
 - CI/CD integration - https://github.com/golangci/golangci-lint
 
-## DAST
+---
+
+# Dynamic Analysis (DAST)
 
 - OWASP ZAP - web application security scanner
 
@@ -46,14 +48,3 @@ COPY --from=build-stage /app/api /usr/local/bin/api
 
 ENTRYPOINT [ "/usr/local/bin/api" ]
 ```
-
----
-
-## Security in Action!
-
-In the `security` folder you will find the `README.md` with instructions on how to run the app and interact with it.
-
-- Detect the security vulnerability with `gosec`.
-- Fix the security vulnerability.
-- Build the container, and detect issues with `grype`.
-- Fix the Docker security issue.
