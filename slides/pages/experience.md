@@ -100,9 +100,7 @@ layout: section
 
 ---
 
-# Transactional layer architecture
-
-<img src="/insurance_architecture.jpg" style="width: 800px;">
+<img src="/insurance_architecture.jpg" style="width: 900px;">
 
 ---
 layout: section
@@ -348,6 +346,7 @@ layout: section
 
 - https://github.com/a-h/ragserver
 - https://github.com/rqlite/rqlite
+- https://ollama.com
 
 ---
 
