@@ -2,7 +2,7 @@
 layout: section
 ---
 
-# Setup
+# Go setup
 
 ---
 

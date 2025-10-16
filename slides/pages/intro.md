@@ -235,9 +235,9 @@ layout: two-cols-header
   <template #24><code>regexp</code> regular expressions</template>
   <template #25><code>sort</code> sorting slices and user-defined collections</template>
   <template #26><code>strconv</code> string conversions</template>
-  <template #27><code>sync</code> concurrency primitives</template>
+  <template #27><code>sync</code> concurrency primitives, e.g. <code>sync.WaitGroup</code></template>
   <template #28><code>testing</code> unit testing</template>
-  <template #29><code>time</code> time and duration</template>
+  <template #29><code>time</code> time and duration - <code>time.Now()</code> etc.</template>
   <template #30><code>unicode</code> Unicode handling</template>
 </v-switch>
 
