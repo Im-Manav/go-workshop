@@ -3,6 +3,9 @@ package fizzbuzz
 import "fmt"
 
 func Check(n int) (result string) {
+	if n == 0 {
+		return "0"
+	}
 	if n%3 == 0 && n%5 == 0 {
 		return "FizzBuzz"
 	}
